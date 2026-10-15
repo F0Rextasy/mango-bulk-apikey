@@ -1,0 +1,50 @@
+{
+  "name": "mango-bulk-apikey",
+  "version": "1.0.0",
+  "description": "Bulk API keys for mangoboost.io — free tier: 6 models (DeepSeek-V4-Pro, Kimi-K3, GLM-5.3, MiniMax-M3); $10 launch bonus is card-gated. One account per key; mint any number.",
+  "license": "MIT",
+  "type": "commonjs",
+  "bin": {
+    "mango-bulk-apikey": "cli.js",
+    "mango-bulk-apikey-launcher": "launcher.js"
+  },
+  "main": "cli.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node launcher.js",
+    "mint": "node cli.js"
+  },
+  "keywords": [
+    "api-key",
+    "bulk",
+    "register",
+    "launcher",
+    "mango",
+    "bulk",
+    "apikey"
+  ],
+  "files": [
+    "bff-probe.js",
+    "billing-probe.js",
+    "cdp.js",
+    "chrome-flags.js",
+    "cli.js",
+    "key-create-test.js",
+    "keys-probe.js",
+    "launcher.js",
+    "lib.js",
+    "mint.js",
+    "models.js",
+    "probe.js",
+    "proxy.js",
+    "recon.js",
+    "rsc.js",
+    "verify-all.js",
+    "verify-lib.js",
+    "verify.js",
+    "README.md",
+    "LICENSE"
+  ]
+}

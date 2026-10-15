@@ -1,0 +1,258 @@
+{
+  "savedAt": "2026-10-14T10:11:47.806Z",
+  "baseUrl": "https://api.mangoboost.io/v1",
+  "object": "list",
+  "data": [
+    {
+      "id": "moonshotai/Kimi-K3",
+      "object": "model",
+      "created": 0,
+      "owned_by": "mangoboost",
+      "status": "available",
+      "model_type": "chat",
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
+      "context_window": 1048576,
+      "max_output_tokens": 1048576,
+      "supported_features": [
+        "tools",
+        "response_format",
+        "reasoning"
+      ],
+      "supported_sampling_parameters": [
+        "temperature",
+        "max_tokens",
+        "stop",
+        "n",
+        "logprobs",
+        "top_logprobs",
+        "response_format",
+        "tools",
+        "tool_choice"
+      ],
+      "model_version": "K3",
+      "quantization": "fp8",
+      "cost": {
+        "input": 2.9,
+        "output": 14.25,
+        "cache": {
+          "read": 0.29,
+          "write": 2.9
+        }
+      }
+    },
+    {
+      "id": "zai-org/GLM-5.3",
+      "object": "model",
+      "created": 0,
+      "owned_by": "mangoboost",
+      "status": "available",
+      "model_type": "chat",
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
+      "context_window": 1048576,
+      "max_output_tokens": 1048576,
+      "supported_features": [
+        "tools",
+        "response_format",
+        "reasoning"
+      ],
+      "supported_sampling_parameters": [
+        "temperature",
+        "max_tokens",
+        "stop",
+        "n",
+        "logprobs",
+        "top_logprobs",
+        "response_format",
+        "tools",
+        "tool_choice"
+      ],
+      "model_version": "5.3",
+      "quantization": "fp8",
+      "cost": {
+        "input": 1.5,
+        "output": 4.5,
+        "cache": {
+          "read": 0.15,
+          "write": 1.5
+        }
+      }
+    },
+    {
+      "id": "deepseek-ai/DeepSeek-V4-Pro-0813",
+      "object": "model",
+      "created": 0,
+      "owned_by": "mangoboost",
+      "status": "available",
+      "model_type": "chat",
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
+      "context_window": 1048576,
+      "max_output_tokens": 1048576,
+      "supported_features": [
+        "tools",
+        "response_format",
+        "reasoning"
+      ],
+      "supported_sampling_parameters": [
+        "temperature",
+        "stop",
+        "n",
+        "logprobs",
+        "top_logprobs",
+        "response_format",
+        "tools",
+        "tool_choice"
+      ],
+      "model_version": "v4-pro",
+      "quantization": "fp8",
+      "cost": {
+        "input": 1.5,
+        "output": 3,
+        "cache": {
+          "read": 0.13,
+          "write": 1.5
+        }
+      }
+    },
+    {
+      "id": "minimax/MiniMax-M3",
+      "object": "model",
+      "created": 0,
+      "owned_by": "mangoboost",
+      "status": "available",
+      "model_type": "chat",
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
+      "context_window": 1048576,
+      "max_output_tokens": 1048576,
+      "supported_features": [
+        "tools",
+        "response_format",
+        "reasoning"
+      ],
+      "supported_sampling_parameters": [
+        "temperature",
+        "max_tokens",
+        "stop",
+        "n",
+        "logprobs",
+        "top_logprobs",
+        "response_format",
+        "tools",
+        "tool_choice"
+      ],
+      "model_version": "M3",
+      "quantization": "fp8",
+      "cost": {
+        "input": 0.29,
+        "output": 1.2,
+        "cache": {
+          "read": 0.06,
+          "write": 0.29
+        }
+      }
+    },
+    {
+      "id": "zai-org/GLM-5.2",
+      "object": "model",
+      "created": 0,
+      "owned_by": "mangoboost",
+      "status": "available",
+      "model_type": "chat",
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
+      "context_window": 1048576,
+      "max_output_tokens": 1048576,
+      "supported_features": [
+        "tools",
+        "response_format",
+        "reasoning"
+      ],
+      "supported_sampling_parameters": [
+        "temperature",
+        "max_tokens",
+        "stop",
+        "n",
+        "logprobs",
+        "top_logprobs",
+        "response_format",
+        "tools",
+        "tool_choice"
+      ],
+      "model_version": "5.2",
+      "quantization": "fp8",
+      "cost": {
+        "input": 1.3,
+        "output": 4.2,
+        "cache": {
+          "read": 0.14,
+          "write": 1.3
+        }
+      }
+    },
+    {
+      "id": "zai-org/GLM-5.2-FP8",
+      "object": "model",
+      "created": 0,
+      "owned_by": "mangoboost",
+      "status": "deprecated",
+      "model_type": "chat",
+      "input_modalities": [
+        "text"
+      ],
+      "output_modalities": [
+        "text"
+      ],
+      "context_window": 1048576,
+      "max_output_tokens": 1048576,
+      "supported_features": [
+        "tools",
+        "response_format",
+        "reasoning",
+        "streaming"
+      ],
+      "supported_sampling_parameters": [
+        "temperature",
+        "max_tokens",
+        "stop",
+        "n",
+        "top_logprobs",
+        "response_format",
+        "tools",
+        "tool_choice"
+      ],
+      "model_version": "5.2",
+      "quantization": "fp8",
+      "cost": {
+        "input": 1.3,
+        "output": 4.2,
+        "cache": {
+          "read": 0.14,
+          "write": 1.3
+        }
+      }
+    }
+  ]
+}
