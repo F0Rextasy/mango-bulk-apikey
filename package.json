@@ -5,16 +5,17 @@
   "license": "MIT",
   "type": "commonjs",
   "bin": {
-    "mango-bulk-apikey": "cli.js",
-    "mango-bulk-apikey-launcher": "launcher.js"
+    "mango-bulk-apikey": "src/cli.js",
+    "mango-bulk-apikey-9router": "src/connect-9router.js",
+    "mango-bulk-apikey-launcher": "src/launcher.js"
   },
-  "main": "cli.js",
+  "main": "src/cli.js",
   "engines": {
     "node": ">=18"
   },
   "scripts": {
-    "start": "node launcher.js",
-    "mint": "node cli.js"
+    "start": "node src/launcher.js",
+    "mint": "node src/cli.js"
   },
   "keywords": [
     "api-key",
@@ -23,27 +24,31 @@
     "launcher",
     "mango",
     "bulk",
-    "apikey"
+    "apikey",
+    "9router",
+    "openai-compatible"
   ],
   "files": [
-    "bff-probe.js",
-    "billing-probe.js",
-    "cdp.js",
-    "chrome-flags.js",
-    "cli.js",
-    "key-create-test.js",
-    "keys-probe.js",
-    "launcher.js",
-    "lib.js",
-    "mint.js",
-    "models.js",
-    "probe.js",
-    "proxy.js",
-    "recon.js",
-    "rsc.js",
-    "verify-all.js",
-    "verify-lib.js",
-    "verify.js",
+    "src/bff-probe.js",
+    "src/billing-probe.js",
+    "src/cdp.js",
+    "src/chrome-flags.js",
+    "src/cli.js",
+    "src/connect-9router.js",
+    "src/key-create-test.js",
+    "src/keys-probe.js",
+    "src/launcher.js",
+    "src/lib.js",
+    "src/mint.js",
+    "src/models.js",
+    "src/probe.js",
+    "src/proxy.js",
+    "src/recon.js",
+    "src/rsc.js",
+    "src/verify-all.js",
+    "src/verify-lib.js",
+    "src/verify.js",
+    "src/models.json",
     "README.md",
     "LICENSE"
   ]

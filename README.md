@@ -1,25 +1,25 @@
 <div align="center">
 
 ```
-███████╗ ██████╗ ██████╗ ███████╗██╗  ██╗████████╗ █████╗ ███████╗██╗   ██╗
-██╔════╝██╔═████╗██╔══██╗██╔════╝╚██╗██╔╝╚══██╔══╝██╔══██╗██╔════╝╚██╗ ██╔╝
-█████╗  ██║██╔██║██████╔╝█████╗   ╚███╔╝    ██║   ███████║███████╗ ╚████╔╝
-██╔══╝  ████╔╝██║██╔══██╗██╔══╝   ██╔██╗    ██║   ██╔══██║╚════██║  ╚██╔╝
-██║     ╚██████╔╝██║  ██║███████╗██╔╝ ██╗   ██║   ██║  ██║███████║   ██║
-╚═╝      ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚══════╝   ╚═╝
+███╗   ███╗ █████╗ ███╗   ██╗ ██████╗  ██████╗
+████╗ ████║██╔══██╗████╗  ██║██╔════╝ ██╔═══██╗
+██╔████╔██║███████║██╔██╗ ██║██║  ███╗██║   ██║
+██║╚██╔╝██║██╔══██║██║╚██╗██║██║   ██║██║   ██║
+██║ ╚═╝ ██║██║  ██║██║ ╚████║╚██████╔╝╚██████╔╝
+╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝  ╚═════╝
 ```
 
 # mango-bulk-apikey
 
-**Bulk API keys for [Mango Inference](https://inference.mangoboost.io) (MangoBoost) — one account per key, the whole sign-up over the console's own HTTP routes, no browser, every key live-verified before it lands in `keys.txt`.**
+**Bulk-create Mango (mangoboost.io) accounts with auto-generated API keys — OpenAI-compatible inference + 9Router connector.**
 
 [![Node](https://img.shields.io/badge/Node-%E2%89%A518-3DA639?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
 [![Dependencies](https://img.shields.io/badge/dependencies-0-blue?style=for-the-badge)](#)
 [![License](https://img.shields.io/badge/license-MIT-6ea8fe?style=for-the-badge)](LICENSE)
-[![Models](https://img.shields.io/badge/models-6%20served-412991?style=for-the-badge)](models.json)
-[![X](https://img.shields.io/badge/X-%40bigbullapp-000000?style=for-the-badge&logo=x&logoColor=white)](https://x.com/bigbullapp)
+[![Models](https://img.shields.io/badge/models-6%20served-412991?style=for-the-badge)](src/models.json)
+[![9Router](https://img.shields.io/badge/9Router-connector-8B5CF6.svg?style=for-the-badge)](#-connect-to-9router)
 
-[🛠 Quick start](#-quick-start) · [✅ Verified](#-verified-working--every-key-is-tested) · [🧭 How it works](#-how-it-works) · [🤖 Models & free tier](#-models--free-tier) · [⚙️ Options](#️-options) · [🛰️ Proxies](#️-behind-a-proxy) · [🐞 Issues](#-issues)
+[🛠 Quick start](#-quick-start) · [✅ Verified](#-verified-working--every-key-is-tested) · [🧭 How it works](#-how-it-works) · [🤖 Models & free tier](#-models--free-tier) · [🔌 9Router](#-connect-to-9router) · [⚙️ Options](#️-options) · [🛰️ Proxies](#️-behind-a-proxy) · [🐞 Issues](#-issues)
 
 </div>
 
@@ -66,13 +66,18 @@ cd mango-bulk-apikey
 printf 'socks5://127.0.0.1:1080\n' > proxies.txt
 
 # 2) mint — any N, 30 is just the default sample
-node cli.js mint --count 30 --workers 3
+node src/cli.js mint --count 30 --workers 3
 
 # 3) re-check keys later through fresh exits
-node cli.js verify --file keys.txt
+node src/cli.js verify --file keys.txt
 ```
 
-Prefer a menu? `node launcher.js` offers **mint · verify · settings** and remembers your count and
+Everything the tools write lands **next to the code**: `src/keys.txt`, `src/accounts.json`,
+`src/outputs/` — and the model catalogue they read is `src/models.json`. The pool is read from
+`src/proxies.txt` (`--pool <file>` overrides).
+
+Prefer a menu?
+ `node src/launcher.js` offers **mint · verify · settings** and remembers your count and
 concurrency in `launcher.config.json`.
 
 What lands on disk while it runs:
@@ -82,7 +87,7 @@ What lands on disk while it runs:
 | `keys.txt` | the keys, **one per line**, appended the moment a key verifies (git-ignored) |
 | `%USERPROFILE%\mango-keys.txt` | a mirror of the same list, outside the repo |
 | `accounts.json` | one record per account: mailbox, password, name, key, exit, verification result (git-ignored) |
-| [`models.json`](models.json) | `GET /v1/models` as answered by a minted key |
+| [`models.json`](src/models.json) | `GET /v1/models` as answered by a minted key |
 | `outputs/` | per-run log, mint state, half-accounts (git-ignored) |
 
 ## ✅ Verified working — every key is tested
@@ -91,7 +96,7 @@ What lands on disk while it runs:
 | --- | --- | --- |
 | Whole sign-up chain, per account | register → OTP → profile → key, each server action answering `{ok:true}` | one fresh account, one key |
 | Key is live at mint time — run for **every** key before it is written | `GET https://api.mangoboost.io/v1/models` | **200** + the 6-model list; a key that fails this is never written to `keys.txt` |
-| Key re-check later | `node cli.js verify --file keys.txt` | walks the whole list through fresh exits; dead keys move to `keys.invalid.txt` |
+| Key re-check later | `node src/cli.js verify --file keys.txt` | walks the whole list through fresh exits; dead keys move to `keys.invalid.txt` |
 | Chat on a fresh account | `POST /v1/chat/completions` | **402 `insufficient_balance`** — the *key* authenticates, the *account wallet* is empty until it is funded |
 | Key creation | `POST /api/bff/keys` | **201** `{key, key_prefix, key_suffix, expires_at}` — `expires_at` ≈ +1 year |
 
@@ -126,7 +131,7 @@ Operational notes:
 ## 🤖 Models & free tier
 
 `GET https://api.mangoboost.io/v1/models` with a minted key serves **6 ids** (captured in
-[`models.json`](models.json); every entry carries `context_window`, `max_output_tokens`,
+[`models.json`](src/models.json); every entry carries `context_window`, `max_output_tokens`,
 `supported_features` and a `cost` block):
 
 | Model id | Family | Status |
@@ -161,12 +166,43 @@ curl https://api.mangoboost.io/v1/chat/completions \
   -d '{"model":"deepseek-ai/DeepSeek-V4-Pro-0813","messages":[{"role":"user","content":"hi"}]}'
 ```
 
+## 🔌 Connect to 9Router
+
+The keys this tool mints are ordinary OpenAI-compatible credentials, so a local
+9Router instance can serve them like any other provider: one `openai-compatible`
+node for Mango (mangoboost.io), one connection per key.
+
+```bash
+node src/connect-9router.js \
+  --base http://localhost:20128 --password 123456 \
+  --api-key <key>            # or env NINEROUTER_API_KEY
+```
+
+The launcher menu and the CLI dispatcher drive the same connector:
+
+```bash
+node src/launcher.js --connect-9router    # asks for base URL, password and key (the key is not echoed)
+node src/cli.js connect --api-key <key>   # the same task, non-interactive
+node src/connect-9router.js --help        # every flag and default
+```
+
+Defaults: base `http://localhost:20128`, password `123456`, model prefix
+`mango`, node `mango`, upstream `https://api.mangoboost.io/v1`, default model
+`deepseek-ai/DeepSeek-V4-Pro-0813`. Register another minted key with `--name "<label 2>"` — the node stays and
+every key becomes another connection 9Router can load-balance across. Then pick a model inside
+9Router:
+
+```
+mango/deepseek-ai/DeepSeek-V4-Pro-0813
+mango/zai-org/GLM-5.3
+```
+
 ## ⚙️ Options
 
 ```bash
-node cli.js mint   --count 30 --workers 3     # create fresh accounts, one key each
-node cli.js verify --file keys.txt            # re-check keys already on disk
-node cli.js help                              # tasks and flags
+node src/cli.js mint   --count 30 --workers 3     # create fresh accounts, one key each
+node src/cli.js verify --file keys.txt            # re-check keys already on disk
+node src/cli.js help                              # tasks and flags
 ```
 
 | Task | Flags |
@@ -174,7 +210,7 @@ node cli.js help                              # tasks and flags
 | `mint` | `--count N` (default `30`, any N — no cap) · `--workers N` (1–8, default `3`) · `--start N` (first slot number in the log) · `--pool <file>` (point at a specific list; `proxies.txt` is the convention) · `--pool-conc N` (parallel pool probes, 2–16, default `8`) · `--reach-log <file>` (append every accepted exit) · `--self-ip <ip>` (own-IP guard override) |
 | `verify` | `--file <path>` (a key list) · `--key <key>` (a single key) · `--model <id>` (chat model for the completion step) |
 
-`node launcher.js` drives the same tasks with a menu (defaults: count `30`, concurrency `2`) and
+`node src/launcher.js` drives the same tasks with a menu (defaults: count `30`, concurrency `2`) and
 stores what you answer in `launcher.config.json`. The pool file is `proxies.txt`; every exit is
 probed at the point of use, so a list that has aged still works — it just takes longer.
 
@@ -204,18 +240,13 @@ user:pass@10.0.0.2:1080
 ## 🐞 Issues
 
 Mango changed the action ids, the consent documents, the key endpoint or the rate limits? The tool
-stops at that step and says so. **[Open an issue](https://github.com/F0Rextasy/mango-bulk-apikey/issues)**
+stops at that step and says so. **[Open an issue](../../issues)**
 with the command you ran and the exact output — the `outputs/` logs make failures reproducible
 without leaking a key. PRs are welcome.
 
 ## 📄 License
 
-MIT © 2026 — see [LICENSE](LICENSE). Use it on accounts you are allowed to create.
+[MIT](LICENSE) © 2026 mango-bulk-apikey contributors — use it on accounts you are allowed to create.
 
 ---
 
-<div align="center">
-
-**Built by F0REXTASY** · [github.com/F0Rextasy](https://github.com/F0Rextasy) · [x.com/bigbullapp](https://x.com/bigbullapp)
-
-</div>
