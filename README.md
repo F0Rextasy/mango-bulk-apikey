@@ -159,6 +159,8 @@ All code lives in `src/` — run it from the repository root as `node src/<file>
 | `src/verify.js` | `--file <path>` · `--key <key>` · `--model <id>` |
 | `src/launcher.js` | interactive: mint / verify / settings — `count` and `concurrency` (passed on as `--workers`) persist in `launcher.config.json` |
 
+Turbo önerilir (5); daha fazlası zayıf bilgisayarda yük/ban riski.
+
 ## 🛰️ Behind a proxy
 
 * `src/proxies.txt`, one exit per line. Accepted lines (blank lines and `#` comments skipped): `socks5://127.0.0.1:1080`, `http://user:pass@10.0.0.1:3128`, `user:pass@10.0.0.2:1080`, `10.0.0.3:8080:user:pass`, `10.0.0.4|3128|user|pass`, `10.0.0.5:3128` (bare host:port defaults to `http://`).

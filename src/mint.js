@@ -4,6 +4,7 @@
  * Mango Inference mint — N accounts x 1 key, HTTP-only.
  *
  *   node src/mint.js --count 30 [--workers 3] [--start 0] [--pool <file>]
+ *     [--preset=turbo|balanced|safe] [--gap <seconds>]
  *
  * Per account: fresh proxy exit, fresh mailbox, registerAction -> OTP ->
  * validateOtpAction -> documents -> completeProfileAction -> create key ->
@@ -20,6 +21,10 @@ const lib = require('./lib');
 const rsc = require('./rsc');
 const verify = require('./verify-lib');
 
+// Keep the fleet alive when one socket dies mid-run (an unhandled 'error' on a
+// freed socket used to take the whole worker pool down with it).
+process.on('uncaughtException', (e) => console.log(`WARN uncaught: ${String(e && e.message).slice(0, 180)}`));
+
 const HERE = path.join(__dirname);
 const KEYS_FILE = path.join(HERE, 'keys.txt');
 const MIRROR_FILE = path.join(os.homedir(), 'mango-keys.txt');
@@ -29,13 +34,26 @@ const KEYCFG_FILE = path.join(lib.OUT, 'key-creation.json');
 
 const argv = process.argv.slice(2);
 const argVal = (name, dflt) => (argv.includes(name) ? argv[argv.indexOf(name) + 1] : dflt);
+// Run-shape presets (operator standard v3): `--preset=turbo|balanced|safe` sets the
+// worker count (turbo = 5) and the pacing gap; an explicit `--workers` / `--gap`
+// always wins, and with no `--preset` the historical counts are untouched.
+const { presetArgv, resolvePreset } = require('./preset');
+const gapArg = argVal('--gap', null);
+const PRESET = resolvePreset({
+  preset: presetArgv(argv) || argVal('--preset', null),
+  conc: null,
+  gap: gapArg == null ? null : parseFloat(gapArg),
+  defaultConc: 3, // mango's historical worker count
+});
+const GAP_MS = PRESET.gap == null ? null : Math.max(0, PRESET.gap) * 1000;
 const COUNT = parseInt(argVal('--count', '30'), 10);
-const WORKERS = Math.max(1, Math.min(parseInt(argVal('--workers', '3'), 10), 8));
+const WORKERS = Math.max(1, Math.min(parseInt(argVal('--workers', String(PRESET.conc)), 10), 8));
 const START = parseInt(argVal('--start', '0'), 10);
 const POOL_FILE = argVal('--pool', null);
 const POOL_CONC = Math.max(2, Math.min(parseInt(argVal('--pool-conc', '8'), 10), 16));
 const REACH_LOG = argVal('--reach-log', null);
 const SELF_IP = argVal('--self-ip', null);
+
 
 const KEYCFG =
   lib.readJson(KEYCFG_FILE, null) || {
@@ -213,6 +231,7 @@ async function createAccount(ctx, { slot, attempt }) {
   // 2. exit (by contract: one account per exit, never our own line)
   let { proxy, ip } = await takeLiveExit();
   log(`exit ${lib.proxyLabel(proxy)} (${ip})`);
+  console.log(`… #${slot} başladı (${lib.proxyLabel(proxy)})`);
 
   /** Runs `fn(proxy)`; on a network-level failure moves to the next exit and retries. */
   const step = async (label, fn, { tries = 3 } = {}) => {
@@ -415,9 +434,11 @@ function extractKey(text) {
   lib.log(`pool ${allPool.length} (unused ${pool.length}) · own ${selfIp} · count ${COUNT} · workers ${WORKERS}`);
 
   const ctx = {
-    pool,
     selfIp,
-    pool: new ExitPool(pool, { selfIp, concurrency: POOL_CONC, reachFile: REACH_LOG }),
+    // The probe class is `ExitProbe` (see above); `ExitPool` never existed, and
+    // the stray bare `pool,` key above the real one left the ctx.pool slot
+    // pointing at an undefined binding.
+    pool: new ExitProbe(pool, { selfIp, concurrency: POOL_CONC, reachFile: REACH_LOG }),
   };
   // never mint a second account on an exit IP an earlier account already used
   for (const acc of readAccounts()) if (acc.exitIp) ctx.pool.usedIps.add(acc.exitIp);
@@ -459,12 +480,14 @@ function extractKey(text) {
           });
           done++;
           lib.log(`worker${w} slot${slot} DONE (${done}/${COUNT})`);
+          console.log(`✓ #${slot} KEY ALINDI: ${acc.key.slice(0, 22)}…   [${done} ok / ${done + failures} deneme]`);
           lastErr = null;
           break;
         } catch (e) {
           lastErr = e;
           lib.log(`worker${w} slot${slot} attempt${attempt} FAIL: ${e.message.slice(0, 220)}`);
-          await lib.sleep(4000 + Math.random() * 4000);
+          console.log(`✗ #${slot} key yok: ${String(e.message).slice(0, 200)}`);
+          await lib.sleep(GAP_MS == null ? 4000 + Math.random() * 4000 : GAP_MS);
         }
       }
       if (lastErr) {
@@ -473,12 +496,15 @@ function extractKey(text) {
       } else {
         results.push({ slot, ok: true });
       }
+      // pacing gap between accounts when a preset / --gap asks for one
+      if (GAP_MS) await lib.sleep(GAP_MS);
     }
   }
 
   const t0 = Date.now();
   await Promise.all(Array.from({ length: WORKERS }, (_, i) => worker(i + 1)));
   lib.log(`run finished in ${Math.round((Date.now() - t0) / 1000)}s — ok ${done}, failed ${failures}, keys ${baseKeys} -> ${readLines(KEYS_FILE).length} · pool probed ${ctx.pool.i} (reach ${ctx.pool.reach}, dead ${ctx.pool.dead})`);
+  console.log(`MINT ${done}/${COUNT} OK`);
   console.log(JSON.stringify({ done, failures, results }, null, 2));
   process.exit(failures ? 1 : 0);
 })().catch((e) => {

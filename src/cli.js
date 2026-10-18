@@ -28,6 +28,8 @@ function help() {
   for (const [name, t] of Object.entries(TASKS)) console.log('  ' + name.padEnd(9) + ' ' + t.note);
   console.log('\noptions: every task takes its own flags — ask it directly:');
   console.log('  node src/<task-file> --help');
+  console.log('\nrun-shape presets (forwarded to the task as-is):');
+  console.log('  --preset=turbo|balanced|safe   turbo = 5 workers (recommended), balanced = 4, safe = 2');
   console.log('\nproxy pool:');
   console.log('  one exit per line in proxies.txt — scheme://host:port[#comment], user:pass@ supported');
   console.log('\n9Router (optional, local inference router):');

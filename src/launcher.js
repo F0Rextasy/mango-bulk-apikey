@@ -11,12 +11,15 @@ const path = require('path');
 const readline = require('readline');
 const { spawnSync } = require('child_process');
 
+// Keep the menu alive when a task's socket dies mid-run.
+process.on('uncaughtException', (e) => console.log(`WARN uncaught: ${String(e && e.message).slice(0, 180)}`));
+
 const HERE = __dirname;
 const CONFIG = path.join(HERE, 'launcher.config.json');
 const POOL = path.join(HERE, 'proxies.txt');
 const KEYS = path.join(HERE, 'keys.txt');
 
-const defaults = { count: 30, conc: 2 };
+const defaults = { count: 30, conc: 2, preset: '' };
 let cfg = { ...defaults };
 try { Object.assign(cfg, JSON.parse(fs.readFileSync(CONFIG, 'utf8'))); } catch (e) {}
 const save = () => fs.writeFileSync(CONFIG, JSON.stringify(cfg, null, 2) + '\n');
@@ -67,17 +70,23 @@ function run(args) {
 
 function argsFor(task) {
   const spec = ARGS[task] || [];
-  return spec.map((v) => (v === 'count' ? String(cfg.count) : v === 'conc' ? String(cfg.conc) : v));
+  const a = spec.map((v) => (v === 'count' ? String(cfg.count) : v === 'conc' ? String(cfg.conc) : v));
+  // Run-shape presets (operator standard v3): turbo = 5 workers, balanced = 4,
+  // safe = 2. Left empty the task keeps its own historical default.
+  if (cfg.preset) a.push('--preset=' + cfg.preset);
+  return a;
 }
 
 async function settings() {
   console.log('\nSettings');
   console.log('  1) count      ' + cfg.count);
   console.log('  2) conc       ' + cfg.conc);
+  console.log('  3) preset     ' + (cfg.preset || '(none — the task default)'));
   console.log('  0) back');
   const p = await ask('choose', '0');
   if (p === '1') cfg.count = parseInt(await ask('count', cfg.count), 10) || cfg.count;
   if (p === '2') cfg.conc = parseInt(await ask('concurrency', cfg.conc), 10) || cfg.conc;
+  if (p === '3') cfg.preset = String(await ask('preset (turbo/balanced/safe, blank = none)', cfg.preset)).trim().toLowerCase();
   save();
 }
 
